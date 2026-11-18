@@ -1,4 +1,4 @@
-# Kristoffer Raflores - Personal Portfolio
+# Kristoffer Reiken M. Raflores - Personal Portfolio
 
 Welcome to the source code for my personal portfolio website! This repository showcases my projects, professional certificates, skills, resume, and background details as an aspiring tech professional / intern.
 
