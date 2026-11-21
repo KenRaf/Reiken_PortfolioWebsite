@@ -124,6 +124,138 @@
     addRipple(width * .5, height * .53, true);
     effectName.textContent = '03 / RIPPLE';
     status.textContent = 'A small ripple can move the whole line.';
+      // Extra effects use the existing cancellation and pause controls.
+  function extraEffect(name, createFrames) {
+    stopText();
+
+    if (!canMove()) {
+      stillMessage();
+      return;
+    }
+
+    if (!letters.length || !letters[0].animate) {
+      status.textContent = "Text effects are unavailable in this browser.";
+      return;
+    }
+
+    const middle = (letters.length - 1) / 2;
+
+    letters.forEach((letter, index) => {
+      playLetter(
+        letter,
+        createFrames(index, middle),
+        {
+          duration: 850,
+          delay: Math.abs(index - middle) * 24,
+          easing: "cubic-bezier(.22,.75,.2,1)",
+          fill: "backwards"
+        }
+      );
+    });
+
+    effectName.textContent = name;
+    status.textContent = `${name} is playing.`;
+  }
+
+  // Letters unfold outward from the center.
+  function bloom() {
+    extraEffect("04 / BLOOM", (index, middle) => [
+      {
+        opacity: 0,
+        transform:
+          `translate(${(middle - index) * 7}px, 24px) scale(.65)`,
+        filter: "blur(4px)"
+      },
+      {
+        opacity: 1,
+        transform: "translate(0, -5px) scale(1.04)",
+        filter: "blur(0)",
+        offset: 0.75
+      },
+      {
+        opacity: 1,
+        transform: "translate(0, 0) scale(1)",
+        filter: "blur(0)"
+      }
+    ]);
+  }
+
+  // Letters open like small folded pieces of paper.
+  function fold() {
+    extraEffect("05 / FOLD", (index) => [
+      {
+        opacity: 0,
+        transform:
+          `perspective(600px) rotateX(${index % 2 ? -85 : 85}deg)
+          translateY(18px)`,
+        filter: "blur(2px)"
+      },
+      {
+        opacity: 1,
+        transform:
+          "perspective(600px) rotateX(-7deg) translateY(-3px)",
+        filter: "blur(0)",
+        offset: 0.75
+      },
+      {
+        opacity: 1,
+        transform: "perspective(600px) rotateX(0deg) translateY(0)",
+        filter: "blur(0)"
+      }
+    ]);
+  }
+
+  // Letters float apart, then settle into place.
+  function drift() {
+    extraEffect("06 / DRIFT", (index, middle) => [
+      {
+        opacity: 0,
+        transform:
+          `translate(${(index - middle) * 4}px,
+                    ${index % 2 ? 32 : -32}px)
+          rotate(${index % 2 ? 8 : -8}deg)`,
+        filter: "blur(3px)"
+      },
+      {
+        opacity: 1,
+        transform: "translate(0, 0) rotate(0deg)",
+        filter: "blur(0)"
+      }
+    ]);
+  }
+
+  $("effect-bloom")?.addEventListener("click", bloom);
+  $("effect-fold")?.addEventListener("click", fold);
+  $("effect-drift")?.addEventListener("click", drift);
+
+  // Built-in fonts keep the page lightweight and work offline.
+  const fontSelect = $("lab-font");
+  const initialFont = display.style.fontFamily;
+
+  const fontChoices = {
+    editorial: 'Georgia, "Times New Roman", serif',
+    modern: 'Arial, Helvetica, sans-serif',
+    code: '"Courier New", monospace'
+  };
+
+  fontSelect?.addEventListener("change", () => {
+    stopText();
+
+    display.style.fontFamily =
+      fontChoices[fontSelect.value] || fontChoices.editorial;
+
+    fitText();
+    effectName.textContent = "YOUR WORDS";
+    status.textContent = "Letter style updated. Try an effect.";
+  });
+
+  // The original Reset handler still resets the text and sliders.
+  $("lab-reset").addEventListener("click", () => {
+    if (fontSelect) fontSelect.value = "editorial";
+
+    display.style.fontFamily = initialFont;
+    fitText();
+  });
   }
 
   // The static pond is painted once per resize, then reused beneath the rings.
@@ -308,4 +440,83 @@
   buildText();
   resize();
   syncPause();
+})();
+
+// Quiet heading entrances, independent of the typography playground.
+(function () {
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const running = new Set();
+
+  const enabled = () =>
+    !reduced.matches &&
+    !document.hidden &&
+    (
+      typeof PORTFOLIO === "undefined" ||
+      PORTFOLIO.animations?.enabled !== false
+    );
+
+  function cancelHeadings() {
+    running.forEach(animation => animation.cancel());
+    running.clear();
+  }
+
+  if (
+    !("IntersectionObserver" in window) ||
+    !Element.prototype.animate
+  ) {
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
+      observer.unobserve(entry.target);
+
+      // Headings stay readable when motion is disabled.
+      if (!enabled()) return;
+
+      const animation = entry.target.animate(
+        [
+          {
+            opacity: 0.35,
+            transform: "translateY(18px)",
+            filter: "blur(3px)"
+          },
+          {
+            opacity: 1,
+            transform: "translateY(0)",
+            filter: "blur(0)"
+          }
+        ],
+        {
+          duration: 700,
+          easing: "cubic-bezier(.22,.75,.2,1)"
+        }
+      );
+
+      running.add(animation);
+
+      animation.finished.then(
+        () => running.delete(animation),
+        () => running.delete(animation)
+      );
+    });
+  }, {
+    threshold: 0.3
+  });
+
+  document.querySelectorAll("main .section h2").forEach(heading => {
+    observer.observe(heading);
+  });
+
+  reduced.addEventListener("change", () => {
+    if (reduced.matches) cancelHeadings();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) cancelHeadings();
+  });
+
+  window.addEventListener("pagehide", cancelHeadings);
 })();
