@@ -172,3 +172,138 @@
   .garden-scene, .type-display { transform: none !important; }
   .alt-portfolio .hero-art:hover .profile-card { transform: translateX(-50%) rotate(-7deg); }
 }
+
+/* Extra typography controls */
+.lab-font-field {
+  min-width: 135px;
+}
+
+.lab-font-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.effect-buttons {
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.effect-buttons button,
+.lab-reset {
+  min-height: 44px;
+}
+
+.effect-buttons button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.effect-buttons button:focus-visible,
+.lab-font-field select:focus-visible,
+.lab-reset:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 4px;
+}
+
+/* A small light sweep when an effect is selected */
+.effect-buttons button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgb(255 255 255 / 20%) 50%,
+    transparent 75%
+  );
+  transform: translateX(-130%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .effect-buttons button:hover::after,
+  .effect-buttons button:focus-visible::after {
+    animation: effect-button-sheen 550ms ease-out;
+  }
+}
+
+@keyframes effect-button-sheen {
+  to {
+    transform: translateX(130%);
+  }
+}
+
+/* Keep every text effect inside the preview */
+.type-stage {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.type-display {
+  perspective: 900px;
+}
+
+.type-glyph {
+  backface-visibility: hidden;
+}
+
+/* Fine editorial details */
+.alt-portfolio .section h2 em {
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.alt-portfolio .skill-card,
+.alt-portfolio .certificate-card,
+.alt-portfolio .contact-link {
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.alt-portfolio .skill-card:hover,
+.alt-portfolio .certificate-card:hover,
+.alt-portfolio .contact-link:hover,
+.alt-portfolio .contact-link:focus-visible {
+  border-color: var(--accent-text);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 8%);
+}
+
+@media (max-width: 760px) {
+  .lab-font-field {
+    flex: 1 1 140px;
+  }
+
+  .effect-buttons {
+    flex: 1 1 100%;
+  }
+
+  .effect-buttons button {
+    flex: 1 1 90px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .effect-buttons button,
+  .alt-portfolio .skill-card,
+  .alt-portfolio .certificate-card,
+  .alt-portfolio .contact-link {
+    transition: none;
+  }
+}

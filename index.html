@@ -92,7 +92,22 @@
           <div class="lab-text-field"><label for="lab-text">Your words</label><input id="lab-text" type="text" value="Make it meaningful." maxlength="28" autocomplete="off" spellcheck="false"></div>
           <div class="lab-range"><label for="lab-weight">Weight <output id="weight-value" for="lab-weight">500</output></label><input id="lab-weight" type="range" min="400" max="700" step="100" value="500"></div>
           <div class="lab-range"><label for="lab-spacing">Spacing <output id="spacing-value" for="lab-spacing">0</output></label><input id="lab-spacing" type="range" min="-3" max="6" step="1" value="0"></div>
-          <div class="effect-buttons" role="group" aria-label="Play a text effect"><button id="effect-reveal" type="button">Reveal ↗</button><button id="effect-decode" type="button">Decode ⌁</button><button id="effect-ripple" type="button">Ripple ≋</button></div>
+          <div class="lab-font-field">
+            <label for="lab-font">Letter style</label>
+            <select id="lab-font">
+              <option value="editorial">Editorial</option>
+              <option value="modern">Modern</option>
+              <option value="code">Code</option>
+            </select>
+          </div>
+          <div class="effect-buttons" role="group" aria-label="Play a text effect">
+            <button id="effect-reveal" type="button">Reveal ↗</button>
+            <button id="effect-decode" type="button">Decode ⌁</button>
+            <button id="effect-ripple" type="button">Ripple ≋</button>
+            <button id="effect-bloom" type="button">Bloom ✳</button>
+            <button id="effect-fold" type="button">Fold ◇</button>
+            <button id="effect-drift" type="button">Drift ↝</button>
+          </div>
           <button id="lab-reset" class="lab-reset" type="button">Reset</button>
         </div>
         <p id="lab-status" class="lab-status" role="status">A little space to experiment.</p>
